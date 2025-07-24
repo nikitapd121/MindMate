@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up | MindMate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --light-bg: #e0f2fe;
+      --light-card: rgba(255, 255, 255, 0.8);
+      --light-text: #1e293b;
+      --light-border: #cbd5e1;
+
+      --dark-bg: #0f172a;
+      --dark-card: rgba(30, 41, 59, 0.7);
+      --dark-text: #f8fafc;
+      --dark-border: #334155;
+
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+    }
+
+    html[data-theme="light"] {
+      --bg: var(--light-bg);
+      --card: var(--light-card);
+      --text: var(--light-text);
+      --border: var(--light-border);
+    }
+
+    html[data-theme="dark"] {
+      --bg: var(--dark-bg);
+      --card: var(--dark-card);
+      --text: var(--dark-text);
+      --border: var(--dark-border);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      margin: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: var(--bg);
+      z-index: 1000;
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+      height: calc(100vh - 60px);
+      margin-top: 60px;
+    }
+
+    .left {
+      flex: 1;
+      background-image: linear-gradient(to bottom right, rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1549921296-3a6b042b04a2?fit=crop&w=1400&q=80');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem;
+      background: var(--bg);
+      overflow-y: auto;
+    }
+
+    .card {
+      backdrop-filter: blur(15px);
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      border-radius: 1rem;
+      width: 100%;
+      max-width: 480px;
+      margin-top: 1rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .card h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.2rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    input::placeholder {
+      color: #94a3b8;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 0.8rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .google-btn {
+      background-color: white;
+      color: #1e293b;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 1.2rem;
+    }
+
+    .google-btn img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .toggle-theme {
+      position: fixed;
+      top: 70px;
+      right: 1rem;
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      padding: 0.5rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--text);
+      z-index: 1001;
+    }
+
+    .error-message {
+      color: #ef4444;
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .left {
+        display: none;
+      }
+
+      .right {
+        flex: none;
+        padding: 1.5rem;
+      }
+
+      .card {
+        margin-top: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <%- include('../partials/nav', { user: user }) %>
+  </header>
+
+  <button class="toggle-theme" onclick="toggleTheme()">🌗</button>
+
+  <div class="container">
+    <div class="left"></div>
+    <div class="right">
+      <form class="card" method="POST" action="/signup">
+        <h2>Create Your MindMate Account</h2>
+
+        <% if (errorMessage) { %>
+          <div class="error-message"><%= errorMessage %></div>
+        <% } %>
+
+        <button type="button" class="btn google-btn" onclick="location.href='/auth/google'">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Icon" />
+          Sign up with Google
+        </button>
+
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" placeholder="Jane Doe" required />
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required />
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Create a password" required />
+
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter password" required />
+
+        <button class="btn" type="submit">Sign Up</button>
+
+        <div class="footer">
+          <p>Already have an account? <a href="/login">Login</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const newTheme = html.dataset.theme === "light" ? "dark" : "light";
+      html.dataset.theme = newTheme;
+      localStorage.setItem("theme", newTheme);
+    }
+
+    (function () {
+      const saved = localStorage.getItem("theme");
+      if (saved) {
+        document.documentElement.dataset.theme = saved;
+      }
+    })();
+  </script>
+</body>
+</html>

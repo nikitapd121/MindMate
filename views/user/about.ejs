@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About | MindMate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --light-bg: #f1f5f9;
+      --light-text: #1e293b;
+      --light-card: white;
+
+      --dark-bg: #0f172a;
+      --dark-text: #f8fafc;
+      --dark-card: #1e293b;
+
+      --primary: #2563eb;
+    }
+
+    html[data-theme="light"] {
+      --bg: var(--light-bg);
+      --text: var(--light-text);
+      --card: var(--light-card);
+    }
+
+    html[data-theme="dark"] {
+      --bg: var(--dark-bg);
+      --text: var(--dark-text);
+      --card: var(--dark-card);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
+      padding-top: 60px; /* space for fixed header */
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: var(--bg);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .container {
+      max-width: 960px;
+      margin: auto;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .highlight {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .card {
+      background: var(--card);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      margin-top: 2rem;
+    }
+
+    .toggle-theme {
+      position: fixed;
+      top: 70px;
+      right: 1rem;
+      background-color: var(--card);
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      padding: 0.5rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      z-index: 1500;
+    }
+
+    ul {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    ul li {
+      margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .container {
+        padding: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <%- include('../partials/nav', { user: user }) %>
+  </header>
+
+  <button class="toggle-theme" onclick="toggleTheme()">🌗</button>
+
+  <div class="container">
+    <div class="card">
+      <h1>About MindMate</h1>
+
+      <p><span class="highlight">MindMate</span> is your thinking co-pilot — an AI-powered platform built to help you untangle, organize, and solve messy problems across code, product, math, or even life.</p>
+
+      <p>Whether you're debugging backend issues, stuck on a tough LeetCode problem, planning your next big startup, or simply overwhelmed with ideas — MindMate listens, clarifies, and guides. It’s like <span class="highlight">Rubber Duck Debugging × Socratic AI Coach × Visual Brainstorming</span> in one powerful tool.</p>
+
+      <p><strong>🎯 Use Cases:</strong></p>
+      <ul>
+        <li>You're stuck on a DSA problem — MindMate guides you step-by-step, not just gives the solution.</li>
+        <li>You want to build a product — it breaks down the MVP, suggests tech stack and APIs.</li>
+        <li>Debugging a weird bug — it helps you trace logs, inspect state, and uncover root causes.</li>
+        <li>You’re brainstorming — and want structured, visual, AI-backed clarity.</li>
+      </ul>
+
+      <p>This isn’t just another chatbot. It’s a personal reasoning partner designed for builders, thinkers, and learners who want depth, structure, and creative support.</p>
+
+      <p class="highlight">Built by a developer. Trained to think. Designed to guide. Welcome to the future of problem-solving.</p>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const newTheme = html.dataset.theme === "light" ? "dark" : "light";
+      html.dataset.theme = newTheme;
+      localStorage.setItem("theme", newTheme);
+    }
+
+    (function () {
+      const saved = localStorage.getItem("theme");
+      if (saved) {
+        document.documentElement.dataset.theme = saved;
+      }
+    })();
+  </script>
+</body>
+</html>

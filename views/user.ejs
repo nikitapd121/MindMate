@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= pageTitle %> | MindMate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #7e57c2;
+      --primary-dark: #5e35b1;
+      --accent: #4dd0e1;
+      --text-light: #fefefe;
+      --text-dark: #2c2c2c;
+      --text-muted: #b0b8c1;
+      --bg-light: #f4f6fa;
+      --bg-dark: #0f1117;
+      --card-light: #ffffff;
+      --card-dark: #1a1d24;
+    }
+
+    [data-theme="dark"] {
+      --bg: var(--bg-dark);
+      --text: var(--text-light);
+      --card-bg: var(--card-dark);
+    }
+
+    [data-theme="light"] {
+      --bg: var(--bg-light);
+      --text: var(--text-dark);
+      --card-bg: var(--card-light);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background-color: var(--card-bg);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    nav a {
+      margin-left: 1.5rem;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+    }
+
+    .btn-login {
+      padding: 8px 16px;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-left: 1rem;
+    }
+
+    .btn-login:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      margin-left: 1rem;
+      cursor: pointer;
+    }
+
+    .theme-toggle input {
+      display: none;
+    }
+
+    .switch {
+      width: 45px;
+      height: 24px;
+      background: #ccc;
+      border-radius: 999px;
+      position: relative;
+    }
+
+    .switch::after {
+      content: '';
+      width: 18px;
+      height: 18px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.3s ease;
+    }
+
+    input:checked + .switch {
+      background: var(--primary);
+    }
+
+    input:checked + .switch::after {
+      transform: translateX(21px);
+    }
+
+    .hero {
+      padding: 5rem 2rem 3rem;
+      text-align: center;
+      background: linear-gradient(to bottom right, var(--card-bg), var(--bg));
+    }
+
+    .hero h1 {
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero span {
+      color: var(--accent);
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 1rem auto 2rem;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      padding: 0.9rem 1.7rem;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-outline {
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      background: transparent;
+      padding: 0.9rem 1.7rem;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .btn-outline:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    .features {
+      padding: 4rem 2rem;
+      background-color: var(--card-bg);
+      text-align: center;
+    }
+
+    .features h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+
+    .features p {
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .card {
+      background: var(--bg);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+    }
+
+    .card img {
+      width: 60px;
+      margin-bottom: 1rem;
+      filter: invert(1);
+    }
+
+    .card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('./partials/nav') %>
+
+  <section class="hero">
+    <h1>Think <span>Smarter</span>, Build <span>Faster</span></h1>
+    <p>Your AI partner for solving code problems, debugging servers, and launching amazing ideas.</p>
+    <div class="buttons">
+      <a href="/start" class="btn-primary">Start Now</a>
+      <a href="/learn" class="btn-outline">Learn More</a>
+    </div>
+  </section>
+
+  <section class="features">
+    <h2>💡 What Can MindMate Do?</h2>
+    <p>From cracking LeetCode problems to designing your MVP — we’ve got you covered.</p>
+    <div class="grid">
+      <div class="card">
+        <a href="/login">
+        <img src="/images/ai-chat.png" alt="AI Chat Icon">
+        <h3>Solve DSA Problems</h3>
+        <p>Use AI to crack coding questions with step-by-step explanations.</p>
+        </a>
+      </div>
+      <div class="card">
+        <a href="/login">
+        <img src="/images/debug-code.png" alt="Debug Code Icon">
+        <h3>Debug Code Fast</h3>
+        <p>Upload code or paste logs, and MindMate finds the issue instantly.</p>
+        </a>
+      </div>
+      <div class="card">
+        <img src="/images/rocket.png" alt="Rocket Icon">
+        <a href="/login"><h3>Launch MVPs</h3>
+        <p>Get suggestions for stack, UI, and third-party tools for fast product launches.</p>
+      </div></a>
+      <div class="card">
+        <a href="/login">
+        <img src="/images/decision.png" alt="Decision Making Icon">
+        <h3>Make Smart Choices</h3>
+        <p>Talk out life or startup decisions with AI that listens and guides.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const themeSwitch = document.getElementById('themeSwitch');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light') {
+      html.setAttribute('data-theme', 'light');
+      themeSwitch.checked = true;
+    }
+
+    themeSwitch.addEventListener('change', () => {
+      if (themeSwitch.checked) {
+        html.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+  </script>
+</body>
+</html>

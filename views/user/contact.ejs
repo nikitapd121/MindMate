@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback | MindMate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --light-bg: #f1f5f9;
+      --light-text: #1e293b;
+      --light-card: white;
+
+      --dark-bg: #0f172a;
+      --dark-text: #f8fafc;
+      --dark-card: #1e293b;
+
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+    }
+
+    html[data-theme="light"] {
+      --bg: var(--light-bg);
+      --text: var(--light-text);
+      --card: var(--light-card);
+    }
+
+    html[data-theme="dark"] {
+      --bg: var(--dark-bg);
+      --text: var(--dark-text);
+      --card: var(--dark-card);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
+      padding-top: 60px;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      background-color: var(--bg);
+      height: 60px;
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .toggle-theme {
+      position: fixed;
+      top: 70px;
+      right: 1rem;
+      background-color: var(--card);
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      padding: 0.5rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      z-index: 1500;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: var(--card);
+      border-radius: 1rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+    }
+
+    form label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    form input, form textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      background-color: rgba(255,255,255,0.7);
+      color: var(--text);
+    }
+
+    form textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 0.8rem;
+      background-color: var(--primary);
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: var(--primary-hover);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 2rem 1rem;
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <%- include('../partials/nav', { user: user }) %>
+  </header>
+
+  <button class="toggle-theme" onclick="toggleTheme()">🌗</button>
+
+  <div class="container">
+    <h1>Feedback</h1>
+    <form method="POST" action="/contact">
+      <label for="name">Your Name</label>
+      <input type="text" id="name" name="name" placeholder="Jane Doe" required />
+
+      <label for="email">Your Email</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required />
+
+      <label for="message">Your Message</label>
+      <textarea id="message" name="message" placeholder="Tell us how we can help..." required></textarea>
+
+      <button type="submit">Send Message</button>
+    </form>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const newTheme = html.dataset.theme === "light" ? "dark" : "light";
+      html.dataset.theme = newTheme;
+      localStorage.setItem("theme", newTheme);
+    }
+
+    (function () {
+      const saved = localStorage.getItem("theme");
+      if (saved) {
+        document.documentElement.dataset.theme = saved;
+      }
+    })();
+  </script>
+</body>
+</html>
