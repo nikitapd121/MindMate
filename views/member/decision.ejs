@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindMate | Smart Decision Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen px-6 py-10">
+  <%- include('../partials/nav', { user: user }) %>
+
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-center text-purple-400 mb-6">🧠 Make Smart Choices</h1>
+    <p class="text-center text-gray-400 mb-10">Talk through life or startup decisions with MindMate AI that listens, reasons, and gives you clarity.</p>
+
+    <!-- Input -->
+    <div class="mb-6">
+      <label for="decisionInput" class="block mb-2 font-semibold text-lg">📝 What decision are you facing?</label>
+      <textarea id="decisionInput" rows="5" class="w-full p-4 bg-gray-800 text-white rounded border border-gray-600" placeholder="e.g., Should I join this startup or continue my current job? Should I launch solo or look for a co-founder?"></textarea>
+    </div>
+
+    <!-- Button -->
+    <div class="text-center mb-10">
+      <button class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded font-semibold">💬 Get AI Guidance</button>
+    </div>
+
+    <!-- Output Section (static for now) -->
+    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-green-400 mb-2">🔍 Key Points to Consider</h2>
+        <ul class="list-disc list-inside text-gray-300 text-sm">
+          <li>Work-life balance vs. long-term growth</li>
+          <li>Learning potential and exposure</li>
+          <li>Financial stability and personal goals</li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-bold text-yellow-400 mb-2">⚖️ Pros and Cons</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-200">
+          <div>
+            <h3 class="font-semibold mb-1 text-green-300">Joining Startup</h3>
+            <ul class="list-disc list-inside">
+              <li>Fast-paced learning</li>
+              <li>Equity opportunity</li>
+              <li>Startup risk and instability</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-semibold mb-1 text-red-300">Staying at Job</h3>
+            <ul class="list-disc list-inside">
+              <li>Predictable income</li>
+              <li>Stable hours</li>
+              <li>Slower growth</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-bold text-blue-400 mb-2">🧭 Final Thought</h2>
+        <p class="text-gray-300 text-sm">
+          Based on your situation, staying for 6 more months while preparing for a startup transition might offer balance between stability and readiness.
+        </p>
+      </div>
+    </div>
+
+    <!-- Feedback -->
+    <div class="text-center mt-8">
+      <a href="/contact" class="text-blue-400 underline text-sm hover:text-blue-300">Want personalized reasoning? Send feedback →</a>
+    </div>
+  </div>
+</body>
+</html>

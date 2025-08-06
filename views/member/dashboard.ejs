@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= pageTitle %> | MindMate</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    }
+  </script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <%- include('../partials/nav', { user: user }) %>
+  
+  <div class="flex items-center justify-between px-6 py-4 border-b border-gray-800">
+    <h1 class="text-2xl font-bold">Welcome, <%= user.name %> 👋</h1>
+  </div>
+
+  <!-- Main Dashboard Grid -->
+  <main class="p-6 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    <!-- 💬 ChatGPT-like AI Box -->
+    <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-xl p-4 shadow-lg flex flex-col justify-between">
+      <h2 class="text-xl font-semibold mb-2">💬 MindMate Chat</h2>
+      <div class="flex-1 overflow-y-auto max-h-64 space-y-4 mb-4">
+        <% if (responses && responses.length > 0) { %>
+          <% responses.forEach(function(r) { %>
+            <div class="bg-gray-900 p-3 rounded-lg">
+              <p class="text-blue-300 font-semibold">You:</p>
+              <p><%= r.prompt %></p>
+              <p class="text-green-300 font-semibold mt-2">MindMate:</p>
+              <p><%= r.response %></p>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p class="text-gray-400">Start your first conversation below.</p>
+        <% } %>
+      </div>
+      <form action="/ask" method="POST" class="flex gap-2">
+        <input
+          type="text"
+          name="prompt"
+          required
+          placeholder="Ask MindMate something..."
+          class="flex-1 px-4 py-2 rounded-md bg-gray-700 text-white focus:outline-none"
+        />
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md font-semibold">Ask</button>
+      </form>
+    </div>
+
+    <!-- 📚 Courses Box -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">📚 Recommended Courses</h2>
+      <ul class="space-y-2 text-sm">
+        <li>➡️ System Design by Ex-FAANG Engineers</li>
+        <li>➡️ JavaScript Mastery Bootcamp</li>
+        <li>➡️ DSA Crash Course – 30 Days</li>
+      </ul>
+    </div>
+
+    <!-- 📰 Startup News -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">📰 Startup News</h2>
+      <ul class="text-sm space-y-2">
+        <li>🚀 OpenAI launches new tools for devs</li>
+        <li>📈 Startup X raises $10M for AI agents</li>
+        <li>🧠 MindMate is trending on HackerNews!</li>
+      </ul>
+    </div>
+
+    <!-- 📘 DSA Problems -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">📘 DSA Problems</h2>
+      <ul class="text-sm space-y-2">
+        <li>🔸 Longest Substring Without Repeating</li>
+        <li>🔸 Merge Intervals</li>
+        <li>🔸 Detect Cycle in Linked List</li>
+      </ul>
+    </div>
+
+    <!-- 🧠 Notes & Bookmarks -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">🧠 Notes & Bookmarks</h2>
+      <p class="text-sm text-gray-300">You can add, edit, and access your notes and favorite prompts here.</p>
+    </div>
+
+    <!-- 🕒 Session History -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">🕒 Session History</h2>
+      <p class="text-sm text-gray-300">A list of past conversations, ideas, and AI chats will appear here.</p>
+    </div>
+
+    <!-- 🗂️ Project Planning Board -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">🗂️ Project Planning</h2>
+      <p class="text-sm text-gray-300">Track ideas, features, and progress across your projects using MindMate.</p>
+    </div>
+
+    <!-- 🤖 Custom GPT Agents -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">🤖 Custom GPT Agents</h2>
+      <p class="text-sm text-gray-300">Train and use specialized agents (e.g. BugFixer, IdeaBooster, MathBuddy).</p>
+    </div>
+
+  </main>
+
+</body>
+</html>

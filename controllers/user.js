@@ -1,3 +1,13 @@
+// controllers/user.js
+const User = require('../models/user');
+
+exports.working = (req, res) => {
+  res.render('user/working', {
+    pageTitle: 'How It Works',
+    errorMessage: null
+  });
+};
+
 exports.login = (req, res) => {
   res.render('user/login', {
     pageTitle: 'Login',
@@ -12,29 +22,38 @@ exports.signup = (req, res) => {
   });
 };
 
-exports.postsignup = (req, res) => {
-  // Optional: save new user (not required for now)
-  res.redirect('/login');
-};
-
-exports.postlogin = (req, res) => {
-  const { email, password } = req.body;
-
-  if (email && password) {
-    req.session.user = { email }; // just a mock session
-    return res.redirect('/');
+exports.postsignup = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    console.log('📥 Form input:', req.body); // for debugging
+    const user = new User({ name, email, password });
+    await user.save();
+    console.log('✅ User saved:', user);
+    res.redirect('/login');
+  } catch (err) {
+    console.error('❌ Error saving user:', err);
+    res.status(500).send('Signup failed');
   }
-
-  res.render('user/login', {
-    pageTitle: 'Login',
-    errorMessage: 'Email and password required.'
-  });
 };
 
-exports.logout = (req, res) => {
-  req.session.destroy(() => {
-    res.redirect('/');
-  });
+exports.postlogin = async(req, res) => {
+  const { email, password } = req.body;
+  try{
+    const user=await User.findOne({email,password});
+    if(!user){
+      return res.redirect('/signup');
+    }
+    req.session.user={
+      id:user._id,
+      name:user.name,
+      email:user.email
+    };
+    res.redirect('/member/dashboard');
+    }
+  catch(err){
+    console.error('❌ Error during login:', err);
+    res.status(500).send('Login failed');
+  } 
 };
 
 exports.home = (req, res) => {
@@ -53,12 +72,4 @@ exports.contact = (req, res) => {
   res.render('user/contact', {
     pageTitle: 'Contact'
   });
-};
-
-exports.dashboard = (req, res) => {
-  if (!req.session.user) return res.redirect('/login');
-
-//   res.render('user/dashboard', {
-//     pageTitle: 'Dashboard'
-//   });
 };

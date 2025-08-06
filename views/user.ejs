@@ -32,6 +32,10 @@
       --card-bg: var(--card-light);
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -43,6 +47,15 @@
       font-family: 'Quicksand', sans-serif;
       background-color: var(--bg);
       color: var(--text);
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    a:hover {
+      text-decoration: none;
     }
 
     header {
@@ -65,9 +78,8 @@
 
     nav a {
       margin-left: 1.5rem;
-      text-decoration: none;
-      color: var(--text);
       font-weight: 600;
+      color: var(--text);
     }
 
     nav a:hover {
@@ -79,7 +91,6 @@
       background-color: var(--primary);
       color: white;
       border-radius: 8px;
-      text-decoration: none;
       margin-left: 1rem;
     }
 
@@ -161,7 +172,6 @@
       padding: 0.9rem 1.7rem;
       border-radius: 10px;
       font-weight: 600;
-      text-decoration: none;
     }
 
     .btn-primary:hover {
@@ -175,7 +185,6 @@
       padding: 0.9rem 1.7rem;
       border-radius: 10px;
       font-weight: 600;
-      text-decoration: none;
     }
 
     .btn-outline:hover {
@@ -239,50 +248,56 @@
 </head>
 
 <body>
-  <%- include('./partials/nav') %>
+  <!-- Header Partial -->
+  <%- include('./partials/nav', { user: user }) %>
 
+  <!-- Hero Section -->
   <section class="hero">
     <h1>Think <span>Smarter</span>, Build <span>Faster</span></h1>
     <p>Your AI partner for solving code problems, debugging servers, and launching amazing ideas.</p>
     <div class="buttons">
-      <a href="/start" class="btn-primary">Start Now</a>
-      <a href="/learn" class="btn-outline">Learn More</a>
+      <a href="#features" class="btn-primary">Start Now</a>
+      <a href="/working" class="btn-outline">How It Works</a>
     </div>
   </section>
 
-  <section class="features">
+  <!-- Features Section -->
+  <section class="features" id="features">
     <h2>💡 What Can MindMate Do?</h2>
     <p>From cracking LeetCode problems to designing your MVP — we’ve got you covered.</p>
     <div class="grid">
       <div class="card">
-        <a href="/login">
-        <img src="/images/ai-chat.png" alt="AI Chat Icon">
-        <h3>Solve DSA Problems</h3>
-        <p>Use AI to crack coding questions with step-by-step explanations.</p>
+        <a href="<%= user ? '/member/dsa' : '/login' %>">
+          <img src="/images/ai-chat.png" alt="AI Chat Icon" />
+          <h3>Solve DSA Problems</h3>
+          <p>Use AI to crack coding questions with step-by-step explanations.</p>
         </a>
       </div>
       <div class="card">
-        <a href="/login">
-        <img src="/images/debug-code.png" alt="Debug Code Icon">
-        <h3>Debug Code Fast</h3>
-        <p>Upload code or paste logs, and MindMate finds the issue instantly.</p>
+        <a href="<%= user ? '/member/debug' : '/login' %>">
+          <img src="/images/debug-code.png" alt="Debug Code Icon" />
+          <h3>Debug Code Fast</h3>
+          <p>Upload code or paste logs, and MindMate finds the issue instantly.</p>
         </a>
       </div>
       <div class="card">
-        <img src="/images/rocket.png" alt="Rocket Icon">
-        <a href="/login"><h3>Launch MVPs</h3>
-        <p>Get suggestions for stack, UI, and third-party tools for fast product launches.</p>
-      </div></a>
+        <a href="<%= user ? '/member/mvp' : '/login' %>">
+          <img src="/images/rocket.png" alt="Rocket Icon" />
+          <h3>Launch MVPs</h3>
+          <p>Get suggestions for stack, UI, and third-party tools for fast product launches.</p>
+        </a>
+      </div>
       <div class="card">
-        <a href="/login">
-        <img src="/images/decision.png" alt="Decision Making Icon">
-        <h3>Make Smart Choices</h3>
-        <p>Talk out life or startup decisions with AI that listens and guides.</p>
+        <a href="<%= user ? '/member/decisions' : '/login' %>">
+          <img src="/images/decision.png" alt="Decision Icon" />
+          <h3>Make Smart Choices</h3>
+          <p>Talk out life or startup decisions with AI that listens and guides.</p>
         </a>
       </div>
     </div>
   </section>
 
+  <!-- Theme Toggle Script -->
   <script>
     const themeSwitch = document.getElementById('themeSwitch');
     const html = document.documentElement;
@@ -293,13 +308,9 @@
     }
 
     themeSwitch.addEventListener('change', () => {
-      if (themeSwitch.checked) {
-        html.setAttribute('data-theme', 'light');
-        localStorage.setItem('theme', 'light');
-      } else {
-        html.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-      }
+      const newTheme = themeSwitch.checked ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
     });
   </script>
 </body>

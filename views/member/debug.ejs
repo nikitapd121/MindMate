@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Debug My Code | MindMate</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+    }
+    textarea, pre {
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-6">
+<%- include('../partials/nav', { user: user }) %>
+  <div class="max-w-5xl mx-auto">
+    <h1 class="text-3xl font-bold text-center text-purple-400 mb-8">🧠 Debug My Code</h1>
+
+    <!-- Language Dropdown -->
+    <div class="mb-6">
+      <label class="block font-semibold mb-2" for="language">Select Language</label>
+      <select id="language" class="w-full p-3 rounded bg-gray-800 text-white border border-gray-600">
+        <option value="cpp">C++</option>
+        <option value="python">Python</option>
+        <option value="c">C</option>
+        <option value="csharp">C#</option>
+        <option value="java">Java</option>
+        <option value="js">JavaScript</option>
+      </select>
+    </div>
+
+    <!-- Code Input -->
+    <!-- Code Input -->
+<div class="mb-6">
+  <label for="codeInput" class="block mb-2 font-semibold">Paste Your Code</label>
+  <textarea id="codeInput" rows="6" class="w-full p-4 bg-gray-800 text-white rounded border border-gray-600" placeholder="Paste your code here..."></textarea>
+</div>
+
+
+    <!-- Buttons -->
+    <div class="flex flex-wrap gap-4 justify-center mb-8">
+      <button onclick="showFix()" class="bg-green-600 hover:bg-green-700 px-5 py-3 rounded font-semibold">🔧 Fix My Code</button>
+      <button onclick="showError()" class="bg-red-600 hover:bg-red-700 px-5 py-3 rounded font-semibold">⚠️ Want Error</button>
+      <button onclick="showChanges()" class="bg-yellow-500 hover:bg-yellow-600 text-black px-5 py-3 rounded font-semibold">📝 What Changes To Make</button>
+    </div>
+
+    <!-- Result Sections -->
+    <div id="errorSection" class="hidden bg-red-800 p-4 rounded mb-6 border border-red-500">
+      <h2 class="text-xl font-bold text-red-300 mb-2">⚠️ Errors Found</h2>
+      <p id="errorText" class="text-sm">Your errors will appear here...</p>
+    </div>
+
+    <div id="changeSection" class="hidden bg-yellow-800 p-4 rounded mb-6 border border-yellow-500">
+      <h2 class="text-xl font-bold text-yellow-300 mb-2">📝 Suggested Changes</h2>
+      <p id="changeText" class="text-sm">Corrections or suggestions will appear here...</p>
+    </div>
+
+    <div id="fixSection" class="hidden bg-green-800 p-4 rounded border border-green-500">
+      <h2 class="text-xl font-bold text-green-300 mb-2">✅ Fixed Code</h2>
+      <pre id="fixedCode" class="text-sm text-green-100 whitespace-pre-wrap"></pre>
+    </div>
+  </div>
+
+  <script>
+    function showError() {
+      document.getElementById('errorSection').classList.remove('hidden');
+      document.getElementById('changeSection').classList.add('hidden');
+      document.getElementById('fixSection').classList.add('hidden');
+
+      // TODO: Replace with dynamic AI result
+      document.getElementById('errorText').innerText =
+        "Line 5: Missing semicolon.\nLine 7: Undefined variable 'x'.";
+    }
+
+    function showChanges() {
+      document.getElementById('changeSection').classList.remove('hidden');
+      document.getElementById('errorSection').classList.add('hidden');
+      document.getElementById('fixSection').classList.add('hidden');
+
+      // TODO: Replace with dynamic AI result
+      document.getElementById('changeText').innerText =
+        "1. Add a semicolon at the end of line 5.\n2. Declare variable 'x' before using it.";
+    }
+
+    function showFix() {
+      document.getElementById('fixSection').classList.remove('hidden');
+      document.getElementById('changeSection').classList.add('hidden');
+      document.getElementById('errorSection').classList.add('hidden');
+
+      const code = document.getElementById('codeInput').value;
+
+      // TODO: Replace with backend call to get actual fixed code
+      document.getElementById('fixedCode').innerText = code + "\n// Fixed: Added missing semicolon.";
+    }
+  </script>
+
+</body>
+</html>
