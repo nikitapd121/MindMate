@@ -1,0 +1,8 @@
+﻿{
+  "model": "mistral",
+  "prompt": "Hello",
+  "stream": false,
+  "options": {
+    "num_predict": 5
+  }
+}

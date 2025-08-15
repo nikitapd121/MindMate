@@ -1,39 +1,59 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
-const path = require('path');
-const session = require('express-session');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const path = require('path');
 
+// ======= Database Connection =======
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('✅ MongoDB Connected'))
+  .catch(err => console.error('❌ MongoDB Error:', err));
+
+// ======= Middleware Setup =======
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Session Configuration
 app.use(session({
-  secret: 'your-secret-key',
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 }
+  cookie: { 
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    secure: process.env.NODE_ENV === 'production'
+  }
 }));
 
-app.use((req, res, next) => {
-  res.locals.user = req.session.user || null;
-  next();
-});
+// ======= Route Imports =======
+const userRoutes = require('./routes/user');
+const memberRoutes = require('./routes/member');
+const analyzeRoutes = require('./routes/analyze'); 
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());
+// ======= Route Middlewares =======
+app.use('/', userRoutes);          // All user auth routes
+app.use('/member', memberRoutes);   // All member dashboard routes
+app.use('/api/analyze', analyzeRoutes); // Code analysis API
 
+// ======= View Engine Setup =======
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-const userRouter = require('./routes/user');
-const memberRouter = require('./routes/member');
-app.use('/member', memberRouter);
-app.use('/', userRouter);
+// ======= Error Handling =======
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).render('error', { 
+    error: process.env.NODE_ENV === 'development' ? err : 'Server Error' 
+  });
+});
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
-
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+// ======= Server Start =======
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log('Available Routes:');
+  console.log('- GET    /                 (User routes)');
+  console.log('- GET    /member           (Member routes)');
+  console.log('- POST   /api/analyze      (Code analysis)');
 });

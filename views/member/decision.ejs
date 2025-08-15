@@ -2,79 +2,100 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MindMate | Smart Decision Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= pageTitle %> | MindMate</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Quicksand', sans-serif;
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
     }
-  </style>
+  </script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen px-6 py-10">
+<body class="bg-gray-900 text-white min-h-screen">
   <%- include('../partials/nav', { user: user }) %>
-
-  <div class="max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold text-center text-purple-400 mb-6">🧠 Make Smart Choices</h1>
-    <p class="text-center text-gray-400 mb-10">Talk through life or startup decisions with MindMate AI that listens, reasons, and gives you clarity.</p>
-
-    <!-- Input -->
-    <div class="mb-6">
-      <label for="decisionInput" class="block mb-2 font-semibold text-lg">📝 What decision are you facing?</label>
-      <textarea id="decisionInput" rows="5" class="w-full p-4 bg-gray-800 text-white rounded border border-gray-600" placeholder="e.g., Should I join this startup or continue my current job? Should I launch solo or look for a co-founder?"></textarea>
-    </div>
-
-    <!-- Button -->
-    <div class="text-center mb-10">
-      <button class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded font-semibold">💬 Get AI Guidance</button>
-    </div>
-
-    <!-- Output Section (static for now) -->
-    <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 space-y-6">
-      <div>
-        <h2 class="text-xl font-bold text-green-400 mb-2">🔍 Key Points to Consider</h2>
-        <ul class="list-disc list-inside text-gray-300 text-sm">
-          <li>Work-life balance vs. long-term growth</li>
-          <li>Learning potential and exposure</li>
-          <li>Financial stability and personal goals</li>
-        </ul>
-      </div>
-
-      <div>
-        <h2 class="text-xl font-bold text-yellow-400 mb-2">⚖️ Pros and Cons</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-200">
-          <div>
-            <h3 class="font-semibold mb-1 text-green-300">Joining Startup</h3>
-            <ul class="list-disc list-inside">
-              <li>Fast-paced learning</li>
-              <li>Equity opportunity</li>
-              <li>Startup risk and instability</li>
-            </ul>
-          </div>
-          <div>
-            <h3 class="font-semibold mb-1 text-red-300">Staying at Job</h3>
-            <ul class="list-disc list-inside">
-              <li>Predictable income</li>
-              <li>Stable hours</li>
-              <li>Slower growth</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <h2 class="text-xl font-bold text-blue-400 mb-2">🧭 Final Thought</h2>
-        <p class="text-gray-300 text-sm">
-          Based on your situation, staying for 6 more months while preparing for a startup transition might offer balance between stability and readiness.
-        </p>
-      </div>
-    </div>
-
-    <!-- Feedback -->
-    <div class="text-center mt-8">
-      <a href="/contact" class="text-blue-400 underline text-sm hover:text-blue-300">Want personalized reasoning? Send feedback →</a>
-    </div>
+  
+  <div class="flex items-center justify-between px-6 py-4 border-b border-gray-800">
+    <h1 class="text-2xl font-bold">Welcome, <%= user?.name || 'MindMate User' %> 👋</h1>
   </div>
+
+  <!-- Main Dashboard Grid -->
+  <main class="p-6 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    <!-- 💬 Chat Box (static) -->
+    <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-xl p-4 shadow-lg flex flex-col">
+      <h2 class="text-xl font-semibold mb-2">💬 MindMate Chat</h2>
+      <div class="flex-1 overflow-y-auto max-h-64 space-y-4 mb-4" id="chatContainer">
+        <% if (responses && responses.length > 0) { %>
+          <% responses.forEach(function(r) { %>
+            <div class="bg-gray-900 p-3 rounded-lg">
+              <p class="text-blue-300 font-semibold">You:</p>
+              <p><%= r.prompt %></p>
+              <p class="text-green-300 font-semibold mt-2">MindMate:</p>
+              <p><%= r.response %></p>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p class="text-gray-400">No conversations yet.</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- 📚 Courses Box -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">📚 Recommended Courses</h2>
+      <ul class="space-y-2 text-sm">
+        <li>➡️ System Design by Ex-FAANG Engineers</li>
+        <li>➡️ JavaScript Mastery Bootcamp</li>
+        <li>➡️ DSA Crash Course – 30 Days</li>
+      </ul>
+    </div>
+
+    <!-- 📰 Startup News -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">📰 Startup News</h2>
+      <ul class="text-sm space-y-2">
+        <li>🚀 OpenAI launches new tools for devs</li>
+        <li>📈 Startup X raises $10M for AI agents</li>
+        <li>🧠 MindMate is trending on HackerNews!</li>
+      </ul>
+    </div>
+
+    <!-- 📘 DSA Problems -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">📘 DSA Problems</h2>
+      <ul class="text-sm space-y-2">
+        <li>🔸 Longest Substring Without Repeating</li>
+        <li>🔸 Merge Intervals</li>
+        <li>🔸 Detect Cycle in Linked List</li>
+      </ul>
+    </div>
+
+    <!-- 🧠 Notes & Bookmarks -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">🧠 Notes & Bookmarks</h2>
+      <p class="text-sm text-gray-300">You can add, edit, and access your notes and favorite prompts here.</p>
+    </div>
+
+    <!-- 🕒 Session History -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">🕒 Session History</h2>
+      <p class="text-sm text-gray-300">A list of past conversations, ideas, and chats will appear here.</p>
+    </div>
+
+    <!-- 🗂️ Project Planning Board -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">🗂️ Project Planning</h2>
+      <p class="text-sm text-gray-300">Track ideas, features, and progress across your projects using MindMate.</p>
+    </div>
+
+    <!-- 🤖 Custom Agents -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">🤖 Custom Agents</h2>
+      <p class="text-sm text-gray-300">Plan and track specialized tasks (e.g., BugFixer, IdeaBooster, MathBuddy).</p>
+    </div>
+
+  </main>
 </body>
 </html>
