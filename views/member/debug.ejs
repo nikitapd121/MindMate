@@ -146,6 +146,15 @@
       background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%234dd0e1"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z"/><path d="M12 17c-.6 0-1-.4-1-1v-4c0-.6.4-1 1-1s1 .4 1 1v4c0 .6-.4 1-1 1zm0-8c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1z"/></svg>') no-repeat left center;
     }
 
+    .gemini-output {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-left: 3px solid var(--accent);
+      background-color: rgba(77, 208, 225, 0.05);
+      white-space: pre-wrap;
+      font-family: 'Courier New', monospace;
+    }
+
     .error-message {
       color: #ff8787;
       margin-top: 1rem;
@@ -167,11 +176,11 @@
 </head>
 <body>
   <%- include('../partials/nav', { user: user }) %>
-  
+
   <div class="debug-container">
     <h1>Multi-Language Code Debugger</h1>
     <p>Analyze code in any programming language for common issues and improvements.</p>
-    
+
     <form class="debug-form">
       <div class="form-group">
         <label for="language">Programming Language:</label>
@@ -188,28 +197,17 @@
           <option value="swift">Swift</option>
         </select>
       </div>
-      
+
       <div class="form-group">
         <label for="code">Your Code:</label>
-        <textarea 
-          id="code" 
-          name="code" 
-          placeholder="Paste your code here..."
-          spellcheck="false"
-          required
-        ></textarea>
+        <textarea id="code" name="code" placeholder="Paste your code here..." spellcheck="false" required></textarea>
       </div>
-      
+
       <div class="form-group">
         <label for="error">Error Message (optional):</label>
-        <textarea 
-          id="error" 
-          name="error" 
-          placeholder="Paste any error messages you're seeing..."
-          spellcheck="false"
-        ></textarea>
+        <textarea id="error" name="error" placeholder="Paste any error messages you're seeing..." spellcheck="false"></textarea>
       </div>
-      
+
       <button type="button" class="btn-submit">Analyze Code</button>
     </form>
 
@@ -219,6 +217,7 @@
       <div id="warningsContainer"></div>
       <div id="suggestionsContainer"></div>
       <div id="errorContainer"></div>
+      <div id="geminiContainer" class="gemini-output"></div>
     </div>
   </div>
 
@@ -234,70 +233,61 @@
       }
 
       try {
-        // UI Loading State
         const btn = document.querySelector('.btn-submit');
         btn.disabled = true;
         btn.textContent = 'Analyzing...';
 
-        // Clear previous results
         document.getElementById('debugResult').style.display = 'none';
 
-        // Call API
         const response = await fetch('/member/debug-api', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ code, error, language })
         });
 
-        if (!response.ok) {
-          throw new Error(`API Error: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
         const result = await response.json();
 
-        // Display results
-        document.getElementById('languageBadge').textContent = result.language.charAt(0).toUpperCase() + result.language.slice(1);
-        
-        const issuesContainer = document.getElementById('issuesContainer');
-        issuesContainer.innerHTML = result.issues.length 
-          ? '<h3>Critical Issues</h3>' + result.issues.map(item => `<div class="issue">${item}</div>`).join('')
-          : '<div class="suggestion">✅ No critical issues found</div>';
-        
-        const warningsContainer = document.getElementById('warningsContainer');
-        warningsContainer.innerHTML = result.warnings.length 
-          ? '<h3>Warnings</h3>' + result.warnings.map(item => `<div class="warning">${item}</div>`).join('')
-          : '';
-        
-        const suggestionsContainer = document.getElementById('suggestionsContainer');
-        suggestionsContainer.innerHTML = result.suggestions.length 
-          ? '<h3>Suggestions</h3>' + result.suggestions.map(item => `<div class="suggestion">${item}</div>`).join('')
-          : '';
-        
-        const errorContainer = document.getElementById('errorContainer');
-        errorContainer.innerHTML = error 
-          ? `<div class="error-message">🔴 Original Error: <code>${error}</code></div>`
-          : '';
+        document.getElementById('languageBadge').textContent =
+          result.language.charAt(0).toUpperCase() + result.language.slice(1);
 
-        // Show results
+        document.getElementById('issuesContainer').innerHTML =
+          result.issues.length
+            ? '<h3>Critical Issues</h3>' + result.issues.map(i => `<div class="issue">${i}</div>`).join('')
+            : '<div class="suggestion">✅ No critical issues found</div>';
+
+        document.getElementById('warningsContainer').innerHTML =
+          result.warnings.length
+            ? '<h3>Warnings</h3>' + result.warnings.map(i => `<div class="warning">${i}</div>`).join('')
+            : '';
+
+        document.getElementById('suggestionsContainer').innerHTML =
+          result.suggestions.length
+            ? '<h3>Suggestions</h3>' + result.suggestions.map(i => `<div class="suggestion">${i}</div>`).join('')
+            : '';
+
+        document.getElementById('errorContainer').innerHTML =
+          error ? `<div class="error-message">🔴 Original Error: <code>${error}</code></div>` : '';
+
+        document.getElementById('geminiContainer').textContent = result.geminiOutput || '';
+
         document.getElementById('debugResult').style.display = 'block';
 
       } catch (err) {
         console.error('Debug failed:', err);
         alert('Analysis failed: ' + err.message);
       } finally {
-        // Reset button
         const btn = document.querySelector('.btn-submit');
         btn.disabled = false;
         btn.textContent = 'Analyze Code';
       }
     });
 
-    // Auto-detect language from code
     document.getElementById('code').addEventListener('input', function() {
       if (!document.getElementById('language').value) {
         const firstLine = this.value.split('\n')[0].toLowerCase();
         let lang = 'javascript';
-        
         if (firstLine.includes('python')) lang = 'python';
         else if (firstLine.includes('java')) lang = 'java';
         else if (firstLine.includes('c++')) lang = 'cpp';
@@ -306,7 +296,6 @@
         else if (firstLine.includes('func ') || firstLine.includes('package ')) lang = 'go';
         else if (firstLine.includes('def ')) lang = 'ruby';
         else if (firstLine.includes('import ')) lang = 'swift';
-        
         document.getElementById('languageBadge').textContent = lang.charAt(0).toUpperCase() + lang.slice(1);
       }
     });

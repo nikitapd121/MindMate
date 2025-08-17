@@ -1,8 +1,7 @@
 const { validationResult } = require('express-validator');
 const axios = require('axios');
 
-// ====== Helper Functions ======
-function detectLanguage(code) {
+function detectLanguage(code){
   const firstLine = code.split('\n')[0].toLowerCase();
   if (firstLine.includes('python')) return 'python';
   if (firstLine.includes('java')) return 'java';
@@ -15,33 +14,31 @@ function detectLanguage(code) {
   return 'javascript';
 }
 
-function analyzeCode(code, language, output) {
-  const issues = [];
-  const suggestions = [];
-  const warnings = [];
-
-  if (code.length > 500) suggestions.push("Code is too long - consider splitting into functions");
-
-  switch (language) {
+function analyzeCode(code, language, geminiOutput) {
+  const issues=[];
+  const suggestions=[];
+  const warnings=[];
+  if(code.length>500)suggestions.push("Code is too long");
+  switch(language){
     case 'javascript':
-      if (code.includes('eval(')) issues.push("Avoid eval() - security risk");
-      if (code.includes('==')) suggestions.push("Use '===' instead of '=='");
+      if(code.includes('eval('))issues.push("Avoideval()-security risk");
+      if(code.includes('=='))suggestions.push("Use'==='instead of'=='");
       break;
     case 'python':
-      if (code.includes('import *')) warnings.push("Avoid wildcard imports");
-      if (!code.includes('if __name__ == "__main__":')) suggestions.push("Add main guard for scripts");
+      if(code.includes('import*'))warnings.push("Avoid wildcard imports");
+      if(!code.includes('if __name__=="__main__":'))suggestions.push("Add main guard for scripts");
       break;
     case 'java':
-      if (!code.includes('public static void main')) warnings.push("Most Java files need a main method");
+      if(!code.includes('public static void main'))warnings.push("Most Java files need a main method");
       break;
     case 'cpp':
-      if (code.includes('using namespace std;')) warnings.push("Avoid 'using namespace std' in headers");
+      if(code.includes('using namespace std;'))warnings.push("Avoid 'using namespace std' in headers");
       break;
-    case 'php':
-      if (!code.includes('declare(strict_types=1);')) suggestions.push("Enable strict types for better type safety");
+    case'php':
+      if(!code.includes('declare(strict_types=1);'))suggestions.push("Enable strict types for better type safety");
       break;
     case 'go':
-      if (!code.includes('func main')) warnings.push("Most Go programs need a main function");
+      if(!code.includes('func main'))warnings.push("Most Go programs need a main function");
       break;
   }
 
@@ -49,36 +46,58 @@ function analyzeCode(code, language, output) {
     issues: issues.length ? issues : ["No critical issues found"],
     suggestions: suggestions.length ? suggestions : ["Code looks clean!"],
     warnings: warnings.length ? warnings : [],
-    ollamaOutput: output || ""
+    geminiOutput: geminiOutput || ""
   };
 }
 
-const getUserAndResponses = (req) => {
-  return {
-    user: req.session.user || { name: 'MindMate User' },
-    responses: req.session.responses || []
-  };
+const getUserAndResponses = (req) => ({
+  user: req.session.user || { name: 'MindMate User' },
+  responses: req.session.responses || []
+});
+
+exports.logout=(req,res)=>{
+  req.session.destroy(err=>{
+    if (err) {
+      console.error("error:", err);
+      return res.status(500).send("Failed to log out");
+    }
+    res.redirect('/');
+  });
 };
 
-// ====== Page Render Controllers ======
-exports.dashboard = (req, res) => {
-  const { user, responses } = getUserAndResponses(req);
-  res.render('member/dashboard', { pageTitle: 'Dashboard', user, responses });
+exports.dashboard=(req,res)=>{
+  const{user,responses}=getUserAndResponses(req);
+  res.render('member/dashboard', 
+    { 
+      pageTitle:'Dashboard', 
+      user: user, 
+      responses:NULL });
 };
 
-exports.dsa = (req, res) => {
-  const { user, responses } = getUserAndResponses(req);
-  res.render('member/dsa', { pageTitle: 'DSA', user, responses });
+exports.dsa=(req,res)=>{
+  const{user,responses}=getUserAndResponses(req);
+  res.render('member/dsa', { 
+    pageTitle:'DSA', 
+    user, 
+    responses });
 };
 
-exports.debug = (req, res) => {
-  const { user, responses } = getUserAndResponses(req);
-  res.render('member/debug', { pageTitle: 'Debug', user, responses });
+exports.debug=(req,res)=>{
+  const{user,responses}=getUserAndResponses(req);
+  res.render('member/debug', {
+    pageTitle: 'Debug', 
+    user, 
+    responses});
 };
 
-exports.decision = (req, res) => {
-  const { user, responses } = getUserAndResponses(req);
-  res.render('member/decision', { pageTitle: 'Decision', user, responses });
+exports.decision=(req,res)=>{
+  const{user,responses}=getUserAndResponses(req);
+  res.render('member/decision', 
+    { pageTitle: 'Decision',
+       theme: req.session.theme || 'dark', 
+       user, 
+       responses, 
+       result: null });
 };
 
 exports.mvp = (req, res) => {
@@ -86,48 +105,41 @@ exports.mvp = (req, res) => {
   res.render('member/mvp', { pageTitle: 'MVP', user, responses });
 };
 
-// ====== Debug API using Ollama ======
+// Debug API using Gemini
 exports.debugCode = async (req, res) => {
   try {
-    // Health check
-    await axios.get(`${process.env.OLLAMA_API_URL}`, { timeout: 5000 });
-    
-    const response = await axios.post(
-      `${process.env.OLLAMA_API_URL}/api/generate`,
+    const { code, error, language: clientLang } = req.body;
+    if (!code) return res.status(400).json({ error: "Code is required" });
+
+    const language = clientLang || detectLanguage(code);
+
+    // Call Gemini API
+    const geminiResponse = await axios.post(
+      `${process.env.GEMINI_API_URL}/analyze`,
+      { code, language, error },
       {
-        model: 'phi3:instruct',
-        prompt: `Briefly analyze this code...`,
-        stream: false,
-        options: {
-          num_ctx: 512,
-          temperature: 0.3
-        }
-      },
-      {
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${process.env.GEMINI_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
         timeout: 120000
       }
     );
 
-    res.json({
-      analysis: response.data.response,
-      model: 'phi3:instruct'
-    });
-    
+    const analysisText = geminiResponse.data?.analysis || "No output from Gemini";
+    const result = analyzeCode(code, language, analysisText);
+
+    res.json({ ...result, language });
+
   } catch (err) {
+    console.error("Gemini Debug Error:", err.message);
     res.status(500).json({
       error: err.message,
-      suggestion: "Try with smaller code or different model"
+      suggestion: "Try with smaller code or different language",
+      issues: ["Failed to analyze code"],
+      warnings: [],
+      suggestions: [],
+      geminiOutput: ""
     });
   }
-};
-// ====== Logout ======
-exports.logout = (req, res) => {
-  req.session.destroy(err => {
-    if (err) {
-      console.error("Logout error:", err);
-      return res.status(500).send("Failed to log out");
-    }
-    res.redirect('/');
-  });
 };

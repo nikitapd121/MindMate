@@ -1,101 +1,171 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= pageTitle %> | MindMate</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageTitle || "MindMate - Decision Helper" %></title>
+  <style>
+    /* Reset & Base */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      background-color: #f9fafb;
+      color: #111827;
+      line-height: 1.5;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    body.dark { background-color: #111827; color: #f3f4f6; }
+    main { max-width: 850px; margin: 0 auto; padding: 3rem 1rem; }
+
+    /* Hero Header */
+    .hero { text-align: center; margin: 3rem auto 2.5rem auto; }
+    .hero h1 { font-size: 2.75rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .hero p { font-size: 1.15rem; color: #4b5563; }
+    body.dark .hero p { color: #9ca3af; }
+
+    /* Sections */
+    section {
+      background-color: #ffffff;
+      border-radius: 1rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    section:hover { transform: translateY(-2px); }
+    body.dark section { background-color: #1f2937; }
+
+    /* Examples */
+    .examples { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .example-chip {
+      padding: 0.5rem 1rem;
+      background-color: #e5e7eb;
+      border-radius: 9999px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .example-chip:hover { background-color: #d1d5db; }
+    body.dark .example-chip { background-color: #374151; }
+    body.dark .example-chip:hover { background-color: #4b5563; }
+
+    /* Form */
+    label {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-weight: 600; margin-bottom: 0.5rem;
+    }
+    input, textarea {
+      width: 100%; padding: 0.9rem 1rem;
+      border: 1px solid #d1d5db; border-radius: 0.5rem;
+      font-size: 1rem; margin-bottom: 1.5rem;
+      transition: border-color 0.2s, background-color 0.3s;
+    }
+    input:focus, textarea:focus {
+      outline: none; border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
+    }
+    body.dark input, body.dark textarea {
+      background-color: #374151; border-color: #4b5563; color: #f3f4f6;
+    }
+
+    /* Button */
+    button {
+      display: inline-block; width: 100%; padding: 0.95rem;
+      font-size: 1.1rem; font-weight: 600; color: #fff;
+      background: linear-gradient(to right, #2563eb, #1d4ed8);
+      border: none; border-radius: 0.5rem; cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    button:hover { opacity: 0.9; }
+    button:active { transform: scale(0.98); }
+
+    /* Suggestions Box */
+    .suggestions { background-color: #f3f4f6; position: relative; }
+    body.dark .suggestions { background-color: #374151; }
+    .suggestions h2 { font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; }
+    .suggestions p { white-space: pre-line; line-height: 1.6; font-size: 1.05rem; }
+    .copy-btn, .pdf-btn {
+      position: absolute; top: 1rem; padding: 0.4rem 0.8rem;
+      font-size: 0.9rem; font-weight: 600; background-color: #2563eb;
+      color: #fff; border: none; border-radius: 0.3rem; cursor: pointer;
+    }
+    .copy-btn { right: 1rem; }
+    .pdf-btn { right: 5.5rem; }
+    .copy-btn:hover, .pdf-btn:hover { opacity: 0.85; }
+
+    /* Footer */
+    footer {
+      text-align: center; padding: 1rem; font-size: 0.9rem; color: #6b7280;
+    }
+    body.dark footer { color: #9ca3af; }
+  </style>
+</head>
+<body class="<%= theme %>">
+  <!-- Navigation separate at top -->
+  <%- include('../partials/nav', { user: user }) %>
+
+  <main>
+    <!-- Hero Header -->
+    <div class="hero">
+      <h1>Decision Helper</h1>
+      <p>Not sure which path to take? Describe your situation and let MindMate guide you.</p>
+    </div>
+
+    <!-- Example Scenarios -->
+    <section>
+      <h2>Quick Examples</h2>
+      <div class="examples">
+        <div class="example-chip" onclick="fillExample('Which JavaScript framework to use?', 'I need something fast to build and easy to maintain.')">JS Framework</div>
+        <div class="example-chip" onclick="fillExample('Career move: Startup vs MNC', 'I want good learning but also job security.')">Career Move</div>
+        <div class="example-chip" onclick="fillExample('Database choice', 'Should I use SQL or NoSQL for my app?')">Database</div>
+      </div>
+    </section>
+
+    <!-- Decision Form -->
+    <section>
+      <form action="/decision" method="POST" onsubmit="showLoading()">
+        <label for="title">📝 Decision Title</label>
+        <input type="text" id="title" name="title" placeholder="e.g., Which framework should I use?" required>
+
+        <label for="details">📖 Details</label>
+        <textarea id="details" name="details" rows="6" placeholder="Explain your options, constraints, and goals..." required></textarea>
+
+        <label for="priority">⭐ Priority (optional)</label>
+        <input type="text" id="priority" name="priority" placeholder="Cost, speed, learning curve, etc.">
+
+        <button type="submit" id="submitBtn">Get Guidance</button>
+      </form>
+    </section>
+
+    <!-- Suggestions Section -->
+    <% if (typeof result !== 'undefined' && result) { %>
+      <section class="suggestions">
+        <h2>💡 Suggestions</h2>
+        <button class="pdf-btn" onclick="exportPDF()">Export PDF</button>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('<%= result.replace(/'/g, "\\'") %>')">Copy</button>
+        <p><%= result %></p>
+      </section>
+    <% } %>
+  </main>
+
+  <footer>
+    &copy; <%= new Date().getFullYear() %> MindMate. All rights reserved.
+  </footer>
+
   <script>
-    function toggleTheme() {
-      const html = document.documentElement;
-      const isDark = html.getAttribute('data-theme') === 'dark';
-      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    function fillExample(title, details) {
+      document.getElementById('title').value = title;
+      document.getElementById('details').value = details;
+    }
+    function showLoading() {
+      const btn = document.getElementById('submitBtn');
+      btn.innerText = 'Thinking...';
+      btn.disabled = true;
+    }
+    function exportPDF() {
+      window.print(); // simplest browser PDF export
     }
   </script>
-</head>
-<body class="bg-gray-900 text-white min-h-screen">
-  <%- include('../partials/nav', { user: user }) %>
-  
-  <div class="flex items-center justify-between px-6 py-4 border-b border-gray-800">
-    <h1 class="text-2xl font-bold">Welcome, <%= user?.name || 'MindMate User' %> 👋</h1>
-  </div>
-
-  <!-- Main Dashboard Grid -->
-  <main class="p-6 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-    <!-- 💬 Chat Box (static) -->
-    <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-xl p-4 shadow-lg flex flex-col">
-      <h2 class="text-xl font-semibold mb-2">💬 MindMate Chat</h2>
-      <div class="flex-1 overflow-y-auto max-h-64 space-y-4 mb-4" id="chatContainer">
-        <% if (responses && responses.length > 0) { %>
-          <% responses.forEach(function(r) { %>
-            <div class="bg-gray-900 p-3 rounded-lg">
-              <p class="text-blue-300 font-semibold">You:</p>
-              <p><%= r.prompt %></p>
-              <p class="text-green-300 font-semibold mt-2">MindMate:</p>
-              <p><%= r.response %></p>
-            </div>
-          <% }) %>
-        <% } else { %>
-          <p class="text-gray-400">No conversations yet.</p>
-        <% } %>
-      </div>
-    </div>
-
-    <!-- 📚 Courses Box -->
-    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
-      <h2 class="text-xl font-semibold mb-3">📚 Recommended Courses</h2>
-      <ul class="space-y-2 text-sm">
-        <li>➡️ System Design by Ex-FAANG Engineers</li>
-        <li>➡️ JavaScript Mastery Bootcamp</li>
-        <li>➡️ DSA Crash Course – 30 Days</li>
-      </ul>
-    </div>
-
-    <!-- 📰 Startup News -->
-    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
-      <h2 class="text-xl font-semibold mb-3">📰 Startup News</h2>
-      <ul class="text-sm space-y-2">
-        <li>🚀 OpenAI launches new tools for devs</li>
-        <li>📈 Startup X raises $10M for AI agents</li>
-        <li>🧠 MindMate is trending on HackerNews!</li>
-      </ul>
-    </div>
-
-    <!-- 📘 DSA Problems -->
-    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
-      <h2 class="text-xl font-semibold mb-3">📘 DSA Problems</h2>
-      <ul class="text-sm space-y-2">
-        <li>🔸 Longest Substring Without Repeating</li>
-        <li>🔸 Merge Intervals</li>
-        <li>🔸 Detect Cycle in Linked List</li>
-      </ul>
-    </div>
-
-    <!-- 🧠 Notes & Bookmarks -->
-    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
-      <h2 class="text-xl font-semibold mb-3">🧠 Notes & Bookmarks</h2>
-      <p class="text-sm text-gray-300">You can add, edit, and access your notes and favorite prompts here.</p>
-    </div>
-
-    <!-- 🕒 Session History -->
-    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
-      <h2 class="text-xl font-semibold mb-3">🕒 Session History</h2>
-      <p class="text-sm text-gray-300">A list of past conversations, ideas, and chats will appear here.</p>
-    </div>
-
-    <!-- 🗂️ Project Planning Board -->
-    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
-      <h2 class="text-xl font-semibold mb-3">🗂️ Project Planning</h2>
-      <p class="text-sm text-gray-300">Track ideas, features, and progress across your projects using MindMate.</p>
-    </div>
-
-    <!-- 🤖 Custom Agents -->
-    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
-      <h2 class="text-xl font-semibold mb-3">🤖 Custom Agents</h2>
-      <p class="text-sm text-gray-300">Plan and track specialized tasks (e.g., BugFixer, IdeaBooster, MathBuddy).</p>
-    </div>
-
-  </main>
 </body>
 </html>

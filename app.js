@@ -1,59 +1,37 @@
 require('dotenv').config();
-const express = require('express');
-const app = express();
-const mongoose = require('mongoose');
-const session = require('express-session');
-const path = require('path');
+require('events').EventEmitter.defaultMaxListeners = 20;
+const express=require('express');
+const app=express();
+const path=require('path');
+const session=require('express-session');
+const mongoose=require('mongoose');
 
-// ======= Database Connection =======
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ MongoDB Connected'))
-  .catch(err => console.error('❌ MongoDB Error:', err));
-
-// ======= Middleware Setup =======
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Session Configuration
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  secret: process.env.SESSION_SECRET||'Hello@321',
   resave: false,
   saveUninitialized: false,
-  cookie: { 
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    secure: process.env.NODE_ENV === 'production'
-  }
 }));
 
-// ======= Route Imports =======
-const userRoutes = require('./routes/user');
-const memberRoutes = require('./routes/member');
-const analyzeRoutes = require('./routes/analyze'); 
-
-// ======= Route Middlewares =======
-app.use('/', userRoutes);          // All user auth routes
-app.use('/member', memberRoutes);   // All member dashboard routes
-app.use('/api/analyze', analyzeRoutes); // Code analysis API
-
-// ======= View Engine Setup =======
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-// ======= Error Handling =======
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).render('error', { 
-    error: process.env.NODE_ENV === 'development' ? err : 'Server Error' 
-  });
+app.use((req, res, next) => {
+  res.locals.user=req.session.user||null;
+  next();
 });
 
-// ======= Server Start =======
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log('Available Routes:');
-  console.log('- GET    /                 (User routes)');
-  console.log('- GET    /member           (Member routes)');
-  console.log('- POST   /api/analyze      (Code analysis)');
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine','ejs');
+app.set('views', path.join(__dirname,'views'));
+
+const userRoutes=require('./routes/user');
+const memberRoutes=require('./routes/member');
+app.use('/',userRoutes);
+app.use('/member',memberRoutes);
+
+const PORT=process.env.PORT||3000;
+app.listen(PORT,"0.0.0.0",()=>{
+  console.log(`Server running on http://0.0.0.0:${PORT}`);
 });

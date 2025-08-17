@@ -14,7 +14,7 @@
   </script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
-    <%- include('../partials/nav', { user: user }) %>
+  <%- include('../partials/nav', { user: user }) %>
   
   <div class="flex items-center justify-between px-6 py-4 border-b border-gray-800">
     <h1 class="text-2xl font-bold">Welcome, <%= user?.name || 'MindMate User' %> 👋</h1>
@@ -23,10 +23,10 @@
   <!-- Main Dashboard Grid -->
   <main class="p-6 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-    <!-- 💬 ChatGPT-like AI Box -->
-    <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-xl p-4 shadow-lg flex flex-col justify-between">
+    <!-- 💬 Chat Box (static) -->
+    <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-xl p-4 shadow-lg flex flex-col">
       <h2 class="text-xl font-semibold mb-2">💬 MindMate Chat</h2>
-      <div class="flex-1 overflow-y-auto max-h-64 space-y-4 mb-4">
+      <div class="flex-1 overflow-y-auto max-h-64 space-y-4 mb-4" id="chatContainer">
         <% if (responses && responses.length > 0) { %>
           <% responses.forEach(function(r) { %>
             <div class="bg-gray-900 p-3 rounded-lg">
@@ -37,22 +37,11 @@
             </div>
           <% }) %>
         <% } else { %>
-          <p class="text-gray-400">Start your first conversation below.</p>
+          <p class="text-gray-400">No conversations yet.</p>
         <% } %>
       </div>
-      <form action="/ask" method="POST" class="flex gap-2">
-        <input
-          type="text"
-          name="prompt"
-          required
-          placeholder="Ask MindMate something..."
-          class="flex-1 px-4 py-2 rounded-md bg-gray-700 text-white focus:outline-none"
-        />
-        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md font-semibold">Ask</button>
-      </form>
     </div>
 
-    <!-- Rest of your dashboard content remains exactly the same -->
     <!-- 📚 Courses Box -->
     <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
       <h2 class="text-xl font-semibold mb-3">📚 Recommended Courses</h2>
@@ -73,7 +62,39 @@
       </ul>
     </div>
 
-    <!-- ... rest of your existing dashboard boxes ... -->
+    <!-- 📘 DSA Problems -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">📘 DSA Problems</h2>
+      <ul class="text-sm space-y-2">
+        <li>🔸 Longest Substring Without Repeating</li>
+        <li>🔸 Merge Intervals</li>
+        <li>🔸 Detect Cycle in Linked List</li>
+      </ul>
+    </div>
+
+    <!-- 🧠 Notes & Bookmarks -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">🧠 Notes & Bookmarks</h2>
+      <p class="text-sm text-gray-300">You can add, edit, and access your notes and favorite prompts here.</p>
+    </div>
+
+    <!-- 🕒 Session History -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">🕒 Session History</h2>
+      <p class="text-sm text-gray-300">A list of past conversations, ideas, and chats will appear here.</p>
+    </div>
+
+    <!-- 🗂️ Project Planning Board -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">🗂️ Project Planning</h2>
+      <p class="text-sm text-gray-300">Track ideas, features, and progress across your projects using MindMate.</p>
+    </div>
+
+    <!-- 🤖 Custom Agents -->
+    <div class="bg-gray-800 rounded-xl p-4 shadow-lg">
+      <h2 class="text-xl font-semibold mb-3">🤖 Custom Agents</h2>
+      <p class="text-sm text-gray-300">Plan and track specialized tasks (e.g., BugFixer, IdeaBooster, MathBuddy).</p>
+    </div>
 
   </main>
 </body>
